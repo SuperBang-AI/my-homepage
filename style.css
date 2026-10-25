@@ -193,7 +193,9 @@ h3 {
   text-transform: none;
 }
 
-/* 入场动画：仅在 JS 可用时隐藏（html.js 由 head 内联脚本添加） */
+/* 入场动画：仅在 JS 可用时隐藏（html.js 由 head 内联脚本添加）。
+   只声明「起点」，过渡交给 GSAP 编排；.is-in 仅作 GSAP 缺席时的直出兜底，
+   所以这里刻意不加 transition —— 同一个属性不能同时由 CSS 和 JS 管。 */
 .js .reveal {
   opacity: 0;
   transform: translateY(22px);
@@ -202,9 +204,6 @@ h3 {
 .js .reveal.is-in {
   opacity: 1;
   transform: none;
-  transition: opacity var(--dur-slow) var(--ease),
-    transform var(--dur-slow) var(--ease);
-  transition-delay: var(--delay, 0ms);
 }
 
 /* 无动效偏好：全部直出 */
@@ -493,6 +492,20 @@ h3 {
   font-size: var(--fs-display);
   letter-spacing: -0.035em;
   max-width: 13em;
+}
+
+/* 标题分行遮罩：每行独立裁切，GSAP 让内层从下方滑入，
+   做出「逐行落笔」的层次，而不是整块标题一起淡入。 */
+.hero h1 .line {
+  display: block;
+  overflow: hidden;
+  /* 给「，」「。」这类下沉标点留出裁切余量，视觉位置不变 */
+  padding-bottom: 0.12em;
+  margin-bottom: -0.12em;
+}
+
+.hero h1 .line__in {
+  display: block;
 }
 
 .hero h1 em {
@@ -821,6 +834,8 @@ h3 {
   font-size: 14px;
   color: var(--ink-2);
   line-height: 1.5;
+  /* 由脚本按顺序点亮：伪元素读这个变量，逐级从 0 弹到 1 */
+  --dot-scale: 1;
 }
 
 .flow li::before {
@@ -833,6 +848,7 @@ h3 {
   border-radius: 50%;
   background: var(--accent);
   opacity: 0.85;
+  transform: scale(var(--dot-scale, 1));
 }
 
 .flow li:not(:last-child)::after {
@@ -1078,6 +1094,12 @@ h3 {
 .contact__qr:hover {
   transform: translateY(-3px) rotate(-0.6deg);
   box-shadow: var(--shadow-2);
+}
+
+/* 复制成功时闪一下：把视线从按钮推到二维码上 */
+.contact__qr.is-flash {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: var(--shadow-3);
 }
 
 .contact__channels {

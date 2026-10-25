@@ -72,8 +72,8 @@
             </div>
 
             <h1 id="hero-title">
-              下班后创业，<br/>
-              <em>我是第一个实验品。</em>
+              <span class="line"><span class="line__in">下班后创业，</span></span>
+              <span class="line"><span class="line__in"><em>我是第一个实验品。</em></span></span>
             </h1>
 
             <p class="hero__lead">
@@ -127,23 +127,23 @@
             <p class="eyebrow" id="stats-title">截至目前</p>
             <div class="stats">
               <div class="stat">
-                <span class="stat__n">21<span class="stat__u">个</span></span>
+                <span class="stat__n"><span class="stat__num">21</span><span class="stat__u">个</span></span>
                 <span class="stat__l">AI 员工在线协作</span>
               </div>
               <div class="stat">
-                <span class="stat__n">55<span class="stat__u">篇</span></span>
+                <span class="stat__n"><span class="stat__num">55</span><span class="stat__u">篇</span></span>
                 <span class="stat__l">长文产出（8/28 至今）</span>
               </div>
               <div class="stat">
-                <span class="stat__n">45<span class="stat__u">天</span></span>
+                <span class="stat__n"><span class="stat__num">45</span><span class="stat__u">天</span></span>
                 <span class="stat__l">GEO 打卡满勤（23/23）</span>
               </div>
               <div class="stat">
-                <span class="stat__n">25<span class="stat__u">天</span></span>
+                <span class="stat__n"><span class="stat__num">25</span><span class="stat__u">天</span></span>
                 <span class="stat__l">日更口播</span>
               </div>
               <div class="stat">
-                <span class="stat__n">3<span class="stat__u">天</span></span>
+                <span class="stat__n"><span class="stat__num">3</span><span class="stat__u">天</span></span>
                 <span class="stat__l">上线出海首站</span>
               </div>
             </div>
@@ -347,6 +347,10 @@
 
     <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-    <script src="./script.js"></script>
+    <!-- GSAP 走本地文件：不产生任何外部请求，国内网络也不会卡在 CDN 上。
+         三个都是 defer，按顺序在 DOM 解析完成后执行，script.js 才能拿到 gsap。 -->
+    <script src="./vendor/gsap.min.js" defer></script>
+    <script src="./vendor/ScrollTrigger.min.js" defer></script>
+    <script src="./script.js" defer></script>
   </body>
 </html>
