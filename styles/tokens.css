@@ -1,0 +1,76 @@
+/* =========================================================
+   tokens.css — 设计令牌
+   定调：苹果发布会式圆角卡片网格（bento grid），底色保持暖纸感，
+   单强调色（陶土红）与二维码颜色呼应。所有颜色只在变量层出现。
+   ========================================================= */
+
+:root {
+  /* ---------- 色彩 ---------- */
+  --bg: #f4f1ea;          /* 页面底：暖白纸 */
+  --bg-2: #ece6db;        /* 次级底色 */
+  --card: #ffffff;        /* 卡片面 */
+  --card-2: #fbf8f3;      /* 次级卡片面 */
+  --ink: #1d1b18;         /* 主文字：暖近黑，不用纯黑 */
+  --ink-2: #5f594f;       /* 次级文字（对白底 6.9:1） */
+  --ink-3: #7a7266;       /* 辅助文字（对白底 4.8:1） */
+  --line: rgba(29, 27, 24, 0.08);
+  --line-2: rgba(29, 27, 24, 0.14);
+  --accent: #b4553a;      /* 陶土红（对白底 4.9:1） */
+  --accent-2: #95422b;    /* 陶土红按压态 */
+  --accent-soft: #f6e8e1; /* 陶土红浅底 */
+  --dark: #1e1b18;        /* 反白卡片底 */
+  --dark-ink: #f7f3ec;
+  --dark-ink-2: #b6ada0;
+  --accent-on-dark: #e2937c; /* 深底上的陶土红（可读性达标） */
+
+  /* ---------- 字体 ---------- */
+  /* 苹果中国官网即用苹方，追求发布会观感时系统字反而最准；
+     拉丁与数字走系统 SF / 有衬线回退，零外部字体请求。 */
+  --font-sans: "PingFang SC", "HarmonyOS Sans SC", "HarmonyOS Sans",
+    "Hiragino Sans GB", "Microsoft YaHei", -apple-system, BlinkMacSystemFont,
+    "Segoe UI", sans-serif;
+  --font-serif: "Songti SC", "Noto Serif SC", Georgia, serif;
+
+  --fs-display: clamp(34px, 6.2vw, 60px);
+  --fs-h2: clamp(23px, 2.8vw, 33px);
+  --fs-h3: 19px;
+  --fs-body: 16px;
+  --fs-sm: 14px;
+  --fs-xs: 12.5px;
+  --fs-stat: clamp(34px, 4.4vw, 46px);
+  --lh-tight: 1.12;
+  --lh-body: 1.75;
+
+  /* ---------- 空间 ---------- */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 24px;
+  --sp-6: 32px;
+  --sp-7: 48px;
+  --sp-8: 64px;
+  --sp-9: 96px;
+  --pad-card: clamp(20px, 2.3vw, 34px);
+  --gap: 16px;
+  --page-max: 1180px;
+
+  /* ---------- 圆角 ---------- */
+  --r-card: 26px;
+  --r-inner: 16px;
+  --r-chip: 999px;
+
+  /* ---------- 阴影（三级，带暖色环境光，不用纯黑） ---------- */
+  --shadow-1: 0 1px 2px rgba(58, 44, 28, 0.05),
+    0 6px 16px -10px rgba(58, 44, 28, 0.18);
+  --shadow-2: 0 2px 6px rgba(58, 44, 28, 0.06),
+    0 20px 44px -20px rgba(58, 44, 28, 0.28);
+  --shadow-3: 0 4px 10px rgba(58, 44, 28, 0.07),
+    0 34px 70px -28px rgba(58, 44, 28, 0.34);
+
+  /* ---------- 动效 ---------- */
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --dur-fast: 170ms;
+  --dur: 340ms;
+  --dur-slow: 640ms;
+}
