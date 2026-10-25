@@ -8,10 +8,24 @@
 
   var doc = document;
   var cells = Array.prototype.slice.call(doc.querySelectorAll(".reveal"));
+  var heroIntro = null; // 首屏开场时间轴，指针效果要等它跑完才接管按钮
 
-  /* ---------- 1. 顶栏：滚动后出现细分隔线 ---------- */
+  /* ---------- 1. 顶栏：滚动后出现细分隔线 + 阅读进度 ---------- */
   var head = doc.getElementById("site-head");
+  var bar = doc.getElementById("read-progress");
   var lastScrolled = false;
+  var barQueued = false;
+
+  /* 1.5px 的陶土线：写 transform 而不是改 width，避免每帧触发布局 */
+  function paintProgress() {
+    barQueued = false;
+    if (!bar) return;
+    var max = doc.documentElement.scrollHeight - window.innerHeight;
+    var p = max > 0 ? window.scrollY / max : 0;
+    if (p < 0) p = 0;
+    else if (p > 1) p = 1;
+    bar.style.transform = "scaleX(" + p.toFixed(4) + ")";
+  }
 
   function onScroll() {
     var scrolled = window.scrollY > 8;
@@ -19,10 +33,58 @@
       head.classList.toggle("is-scrolled", scrolled);
       lastScrolled = scrolled;
     }
+    if (!barQueued) {
+      barQueued = true;
+      window.requestAnimationFrame(paintProgress);
+    }
   }
 
   window.addEventListener("scroll", onScroll, { passive: true });
+  window.addEventListener("resize", onScroll, { passive: true });
   onScroll();
+
+  /* 图片、字体就位后页面高度会变，进度线要按新高度重算一次 */
+  window.addEventListener("load", paintProgress);
+
+  /* ---------- 1.5 导航当前位置 ----------
+     用视口正中一条细带来判定「我在哪一节」，避免两节同时命中。 */
+  (function navSpy() {
+    var links = {};
+    Array.prototype.forEach.call(
+      doc.querySelectorAll(".site-nav a[href^='#']:not(.nav-cta)"),
+      function (a) {
+        links[a.getAttribute("href").slice(1)] = a;
+      }
+    );
+
+    var secs = ["projects", "about", "contact"].map(function (id) {
+      return doc.getElementById(id);
+    }).filter(Boolean);
+
+    if (!("IntersectionObserver" in window) || !secs.length) return;
+
+    function clearAll() {
+      Object.keys(links).forEach(function (k) {
+        links[k].classList.remove("is-active");
+      });
+    }
+
+    var io = new IntersectionObserver(
+      function (entries) {
+        entries.forEach(function (en) {
+          if (!en.isIntersecting) return;
+          clearAll();
+          var link = links[en.target.id];
+          if (link) link.classList.add("is-active");
+        });
+      },
+      { rootMargin: "-45% 0px -45% 0px" }
+    );
+
+    secs.forEach(function (s) {
+      io.observe(s);
+    });
+  })();
 
   /* ---------- 2. 兜底：GSAP 缺席时内容必须直出，绝不留白 ---------- */
   function showAll() {
@@ -57,9 +119,9 @@
 
       /* ---- 首屏：一次 1 秒左右的开场，把视线按在标题上 ---- */
       if (heroCell) {
-        var intro = gsap.timeline({ defaults: { ease: "power3.out" } });
+        heroIntro = gsap.timeline({ defaults: { ease: "power3.out" } });
 
-        intro
+        heroIntro
           // 卡片本身不位移：位移全部让给文字，层级才出得来
           .set(heroCell, { y: 0 })
           .to(heroCell, { autoAlpha: 1, duration: 0.5, ease: "power2.out" }, 0)
@@ -68,7 +130,16 @@
           // 标题两行各自从遮罩下方滑上来，第二行稍晚，读完刚好落定
           .from(".hero h1 .line__in", { yPercent: 110, duration: 0.9, stagger: 0.16 }, 0.16)
           .from(".hero__lead", { y: 12, autoAlpha: 0, duration: 0.7 }, 0.62)
-          .from(".hero__actions .btn", { y: 10, autoAlpha: 0, duration: 0.6, stagger: 0.07 }, 0.74);
+          // 按钮用 fromTo 明确写出终点：from 是"以当前值为终点"，
+          // 一旦这个补间被重新初始化，会把 10px 记成终点，按钮就停在半空。
+          .fromTo(
+            ".hero__actions .btn",
+            { y: 10, autoAlpha: 0 },
+            { y: 0, autoAlpha: 1, duration: 0.6, stagger: 0.07 },
+            0.74
+          )
+          // 收尾把行内 transform 清干净：之后悬停/按压交给 CSS，磁吸交给 quickTo
+          .set(".hero__actions .btn", { clearProps: "transform" }, 1.46);
       }
 
       /* ---- 其余卡片：进入视口浮起，卡内元素再分一层 ---- */
@@ -147,6 +218,147 @@
         ScrollTrigger.refresh();
       });
     });
+
+    /* ---- 指针效果：只在鼠标设备 + 允许动效时注册；离开即解绑 ----
+       触屏设备整个不进入这个分支，永远不会挂 pointermove。 */
+    var pointerMM = gsap.matchMedia();
+    pointerMM.add(
+      "(hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)",
+      function () {
+        return pointerEffects(gsap);
+      }
+    );
+
+    function pointerEffects(gsap) {
+      var heroCell = doc.querySelector(".cell-hero");
+      var btn = doc.querySelector(".hero__actions .btn--primary");
+      var glow = doc.querySelector(".hero__glow");
+      // 聚光用 left:0/top:0 定位在卡片上，坐标要按卡片算，不是按 .cell 算
+      var glowHost = glow ? glow.parentElement : heroCell;
+      if (!heroCell) return;
+
+      var RANGE = 26; // 指针离按钮边界多远开始被“吸”住
+      var PULL = 0.14; // 位移衰减：指针走 1px，按钮跟 0.14px
+      var MAX = 5; // 最多跟 5px，再多就像在弹跳
+
+      var gx = null;
+      var gy = null;
+      var bx = null;
+      var by = null;
+      var home = null;
+      var started = false;
+
+      /* 必须等开场动画跑完再建 quickTo：
+         它是以「当前值」为起点的补间，如果在 .from 把按钮压到 y:10 的那一刻创建，
+         会把 10px 记成终点，按钮就永远停在半空（实测踩过）。 */
+      function start() {
+        if (started) return;
+        started = true;
+
+        if (glow) {
+          gx = gsap.quickTo(glow, "x", { duration: 0.55, ease: "power2.out" });
+          gy = gsap.quickTo(glow, "y", { duration: 0.55, ease: "power2.out" });
+          // 开场落定之后才让光显形，不跟标题抢第一拍
+          gsap.to(glow, { autoAlpha: 1, duration: 1.1, ease: "power2.out" });
+        }
+
+        if (btn) {
+          bx = gsap.quickTo(btn, "x", { duration: 0.5, ease: "power3.out" });
+          by = gsap.quickTo(btn, "y", { duration: 0.5, ease: "power3.out" });
+        }
+
+        centerGlow();
+      }
+
+      function centerGlow() {
+        home = { x: glowHost.offsetWidth / 2, y: glowHost.offsetHeight / 2 };
+        if (glow && gx) {
+          gx(home.x);
+          gy(home.y);
+        }
+      }
+
+      function clamp(v) {
+        return v > MAX ? MAX : v < -MAX ? -MAX : v;
+      }
+
+      function onMove(e) {
+        if (e.pointerType && e.pointerType !== "mouse") return;
+        // 开场动画还在跑：这一拍留给标题，不接管按钮
+        if (heroIntro && heroIntro.isActive()) return;
+
+        if (glow && gx) {
+          var cr = glowHost.getBoundingClientRect();
+          gx(e.clientX - cr.left);
+          gy(e.clientY - cr.top);
+        }
+
+        if (btn && bx) {
+          var br = btn.getBoundingClientRect();
+          var dx = e.clientX - (br.left + br.width / 2);
+          var dy = e.clientY - (br.top + br.height / 2);
+          if (
+            Math.abs(dx) > br.width / 2 + RANGE ||
+            Math.abs(dy) > br.height / 2 + RANGE
+          ) {
+            bx(0);
+            by(0);
+            return;
+          }
+          bx(clamp(dx * PULL));
+          by(clamp(dy * PULL));
+        }
+      }
+
+      function onLeave() {
+        if (btn && bx) {
+          bx(0);
+          by(0);
+        }
+        centerGlow();
+      }
+
+      /* 磁吸按钮的按下反馈：CSS :active 会被 GSAP 的行内 transform 盖掉，
+         所以这个按钮的按压改由 JS 管，其余按钮仍走 CSS。 */
+      function press() {
+        gsap.to(btn, { scale: 0.975, duration: 0.1, overwrite: "auto" });
+      }
+      function release() {
+        gsap.to(btn, { scale: 1, duration: 0.32, ease: "power2.out" });
+      }
+
+      heroCell.addEventListener("pointermove", onMove);
+      heroCell.addEventListener("pointerleave", onLeave);
+      window.addEventListener("resize", centerGlow);
+
+      if (btn) {
+        btn.addEventListener("pointerdown", press);
+        btn.addEventListener("pointerup", release);
+        btn.addEventListener("pointercancel", release);
+        btn.addEventListener("pointerleave", release);
+      }
+
+      /* 开场还在跑就挂到 onComplete 上，跑完再接管按钮 */
+      if (heroIntro && heroIntro.isActive()) {
+        heroIntro.eventCallback("onComplete", start);
+      } else {
+        start();
+      }
+
+      return function cleanup() {
+        heroCell.removeEventListener("pointermove", onMove);
+        heroCell.removeEventListener("pointerleave", onLeave);
+        window.removeEventListener("resize", centerGlow);
+        if (btn) {
+          btn.removeEventListener("pointerdown", press);
+          btn.removeEventListener("pointerup", release);
+          btn.removeEventListener("pointercancel", release);
+          btn.removeEventListener("pointerleave", release);
+          gsap.set(btn, { x: 0, y: 0, scale: 1, clearProps: "transform" });
+        }
+        if (glow) gsap.set(glow, { autoAlpha: 0 });
+      };
+    }
 
     /* ---- 数字带：五个数字从 0 滚到目标值 ---- */
     function statsIn(tl) {

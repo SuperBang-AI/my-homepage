@@ -248,6 +248,21 @@ h3 {
   border-bottom-color: var(--line);
 }
 
+/* 阅读进度：1.5px 陶土线贴 header 下沿，只动 scaleX。
+   它是"信息"不是"装饰"，所以 reduced-motion 下也保留（只是不再有动画）。 */
+.site-head__progress {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 1.5px;
+  background: var(--accent);
+  opacity: 0.9;
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  pointer-events: none;
+}
+
 .site-head__inner {
   max-width: var(--page-max);
   margin: 0 auto;
@@ -305,6 +320,12 @@ h3 {
 }
 
 .site-nav a:hover {
+  color: var(--ink);
+  background: rgba(29, 27, 24, 0.05);
+}
+
+/* 当前所在章节：和 hover 同一套观感，不另造一种"高亮色" */
+.site-nav a.is-active {
   color: var(--ink);
   background: rgba(29, 27, 24, 0.05);
 }
@@ -413,13 +434,15 @@ h3 {
     box-shadow var(--dur) var(--ease);
 }
 
+/* 悬停只抬 3px：11 张卡里多数是纯文字卡，抬太高会暗示「这里能点」。
+   同组卡片一律同样幅度，不按可点/不可点做差异化。 */
 .card:hover {
-  transform: translateY(-5px);
+  transform: translateY(-3px);
   box-shadow: var(--shadow-2);
 }
 
 .card:active {
-  transform: translateY(-2px);
+  transform: translateY(-1px);
   transition-duration: var(--dur-fast);
 }
 
@@ -439,6 +462,33 @@ h3 {
   justify-content: flex-start;
   gap: var(--sp-5);
   padding: clamp(26px, 3.2vw, 46px);
+}
+
+/* 首屏纸面聚光：一层跟着指针走的暖光，让纸「被手按着移动」。
+   刻意不用 mix-blend-mode——暖纸底上混合会发脏。 */
+.hero__glow {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 640px;
+  height: 640px;
+  margin: -320px 0 0 -320px;
+  z-index: 0;
+  opacity: 0;
+  pointer-events: none;
+  will-change: transform;
+  background: radial-gradient(
+    closest-side,
+    rgba(180, 85, 58, 0.1),
+    rgba(180, 85, 58, 0.035) 55%,
+    rgba(180, 85, 58, 0)
+  );
+}
+
+/* 卡内内容抬一层，聚光只作用在纸面上，不压在文字上 */
+.hero > *:not(.hero__glow) {
+  position: relative;
+  z-index: 1;
 }
 
 .hero__actions {
@@ -867,7 +917,8 @@ h3 {
   letter-spacing: -0.03em;
 }
 
-/* 项目外链 */
+/* 项目外链：静息是一条浅底线（"可以点"的暗示），
+   悬停时陶土色从左侧扫过，离开时向左收回。 */
 .proj__link {
   display: inline-flex;
   align-items: center;
@@ -877,13 +928,17 @@ h3 {
   color: var(--ink);
   min-height: 44px;
   align-self: flex-start;
-  border-bottom: 1px solid var(--line-2);
-  transition: border-color var(--dur-fast) ease, color var(--dur-fast) ease;
+  background-image: linear-gradient(var(--accent), var(--accent)),
+    linear-gradient(var(--line-2), var(--line-2));
+  background-repeat: no-repeat;
+  background-position: 0 100%, 0 100%;
+  background-size: 0% 1px, 100% 1px;
+  transition: background-size 240ms var(--ease), color var(--dur-fast) ease;
 }
 
 .proj__link:hover {
   color: var(--accent-2);
-  border-bottom-color: var(--accent);
+  background-size: 100% 1px, 100% 1px;
 }
 
 /* ---------------- 关于我 ---------------- */
