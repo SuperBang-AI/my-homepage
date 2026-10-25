@@ -156,12 +156,14 @@ ol {
   border-radius: 6px;
 }
 
-/* 标题统一：紧字距、收紧行高，发布会观感的关键 */
+/* 标题统一：紧字距、收紧行高，发布会观感的关键。
+   中文字形是满格方块，负字距过大会让笔画相碰，所以只收一点点：
+   字越大越宽松——h1 几乎为 0，正文级标题 -0.012em 已经是极限。 */
 h1,
 h2,
 h3 {
   line-height: var(--lh-tight);
-  letter-spacing: -0.022em;
+  letter-spacing: -0.012em;
   font-weight: 600;
   text-wrap: balance;
 }
@@ -540,7 +542,8 @@ h3 {
 
 .hero h1 {
   font-size: var(--fs-display);
-  letter-spacing: -0.035em;
+  /* 60px 的中文标题再收紧，笔画就贴到一起了。气势靠字号给，不靠字距 */
+  letter-spacing: -0.005em;
   max-width: 13em;
 }
 
@@ -568,6 +571,9 @@ h3 {
   color: var(--ink-2);
   max-width: 30em;
   line-height: 1.72;
+  /* 375 宽度下这句话只剩「业。」两个字掉到第二行：balance 让两行长度接近，
+     孤字就没了。桌面端只有一行，这条声明不产生任何影响。 */
+  text-wrap: balance;
 }
 
 .hero__actions {
@@ -1137,24 +1143,48 @@ h3 {
   align-items: center;
 }
 
+/* 二维码：图片本身已是「只剩方阵」的白底方图，
+   所以外面不再套一层白卡——白卡套白图会变成「卡里长出一张卡」。
+   只给图一道发丝边 + 极浅阴影，让它读作「一张二维码」，不是「一张名片截图」。 */
 .contact__qr {
-  border-radius: var(--r-inner);
-  overflow: hidden;
-  box-shadow: var(--shadow-1);
-  background: #fff;
-  transition: transform var(--dur) var(--ease),
-    box-shadow var(--dur) var(--ease);
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  transition: transform var(--dur) var(--ease);
+}
+
+.contact__qr img {
+  width: 100%;
+  height: auto;
+  border-radius: 12px;
+  box-shadow: inset 0 0 0 1px var(--line), var(--shadow-1);
+  transition: box-shadow var(--dur) var(--ease);
+}
+
+.contact__qr figcaption {
+  font-size: var(--fs-xs);
+  color: var(--ink-3);
+  letter-spacing: 0.08em;
+  line-height: 1.4;
 }
 
 .contact__qr:hover {
   transform: translateY(-3px) rotate(-0.6deg);
-  box-shadow: var(--shadow-2);
+}
+
+.contact__qr:hover img {
+  box-shadow: inset 0 0 0 1px var(--line), var(--shadow-2);
 }
 
 /* 复制成功时闪一下：把视线从按钮推到二维码上 */
 .contact__qr.is-flash {
   transform: translateY(-3px) scale(1.02);
-  box-shadow: var(--shadow-3);
+}
+
+.contact__qr.is-flash img {
+  box-shadow: inset 0 0 0 1px var(--line), var(--shadow-3);
 }
 
 .contact__channels {
@@ -1208,12 +1238,31 @@ h3 {
   justify-content: space-between;
   gap: var(--sp-3);
   font-size: var(--fs-sm);
-  color: var(--ink-3);
+  /* ink-3 在这个底色上只有 4.21:1，不到 AA；换 ink-2（6.9:1） */
+  color: var(--ink-2);
 }
 
 .site-foot em {
   font-style: normal;
+}
+
+.site-foot__more {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  flex-wrap: wrap;
+}
+
+.site-foot__more a {
   color: var(--ink-2);
+  border-bottom: 1px solid var(--line-2);
+  padding-bottom: 1px;
+  transition: color var(--dur-fast) ease, border-color var(--dur-fast) ease;
+}
+
+.site-foot__more a:hover {
+  color: var(--accent-2);
+  border-bottom-color: currentColor;
 }
 
 /* ---------------- 复制提示条 ---------------- */
@@ -1260,7 +1309,7 @@ h3 {
 
   .hero h1 {
     font-size: clamp(26px, 7.6vw, 34px);
-    letter-spacing: -0.03em;
+    letter-spacing: -0.005em;
   }
 }
 
