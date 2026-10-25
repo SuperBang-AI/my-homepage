@@ -6,23 +6,32 @@
     <title>徐不慌 · 下班后创业，我是第一个实验品</title>
     <meta
       name="description"
-      content="白天在外企金融公司写代码，晚上指挥 21 个 AI 员工，每周上线一个出海站。帮不敢辞职的打工人，用 AI 员工在下班时间建起资产型事业。"
+      content="白天在外企金融公司写代码，晚上指挥 21 个 AI 员工，每周上线一个出海站。不敢辞职的打工人，也能有一份资产型事业。"
     />
     <meta name="theme-color" content="#f4f1ea" />
+
+    <!-- 分享卡片：og:image 用相对路径，上线后建议换成完整网址，微信/微博才能抓到图 -->
     <meta property="og:title" content="徐不慌 · 下班后创业，我是第一个实验品" />
     <meta
       property="og:description"
       content="白天写代码，晚上指挥 21 个 AI 员工，每周上线一个出海站。"
     />
     <meta property="og:type" content="profile" />
-    <link rel="preload" as="image" href="images/avatar.jpg" />
+    <meta property="og:image" content="./avatar.jpg" />
+    <meta property="og:image:alt" content="徐不慌的头像" />
+
+    <!-- 网站小图标：emoji 内联 SVG，不额外产生图片请求 -->
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%A7%AA%3C/text%3E%3C/svg%3E"
+    />
+
+    <link rel="preload" as="image" href="./avatar.jpg" />
     <script>
       /* JS 可用时才启用入场动画，避免脚本失败导致整页空白 */
       document.documentElement.classList.add("js");
     </script>
-    <link rel="stylesheet" href="styles/tokens.css" />
-    <link rel="stylesheet" href="styles/base.css" />
-    <link rel="stylesheet" href="styles/components.css" />
+    <link rel="stylesheet" href="./style.css" />
   </head>
 
   <body>
@@ -35,7 +44,7 @@
       <div class="site-head__inner">
         <a class="brand" href="#top">
           <span class="brand__mark">
-            <img src="images/avatar.jpg" alt="" width="30" height="30" />
+            <img src="./avatar.jpg" alt="" width="30" height="30" />
           </span>
           徐不慌
         </a>
@@ -54,7 +63,7 @@
           <article class="card hero">
             <div class="hero__top">
               <span class="hero__avatar">
-                <img src="images/avatar.jpg" alt="徐不慌的卡通头像" width="46" height="46" />
+                <img src="./avatar.jpg" alt="徐不慌的卡通头像" width="46" height="46" />
               </span>
               <span class="hero__who">
                 <span class="hero__name">徐不慌</span>
@@ -63,12 +72,12 @@
             </div>
 
             <h1 id="hero-title">
-              下班后创业，<br />
+              下班后创业，<br/>
               <em>我是第一个实验品。</em>
             </h1>
 
             <p class="hero__lead">
-              帮不敢辞职的打工人，用 AI 员工在下班时间建起资产型事业。
+              不敢辞职的打工人，也能有一份资产型事业。
             </p>
 
             <div class="hero__actions">
@@ -96,6 +105,17 @@
               <div class="iden__row">
                 <span class="iden__k">每周</span>
                 <span class="iden__v">上线一个出海站</span>
+              </div>
+              <div class="iden__row">
+                <span class="iden__k">每天一轮</span>
+                <ol class="loop">
+                  <li>做事</li>
+                  <li>公开</li>
+                  <li>引人</li>
+                  <li>听问</li>
+                  <li>成交</li>
+                  <li>反哺</li>
+                </ol>
               </div>
             </div>
           </article>
@@ -218,16 +238,28 @@
         <!-- 08 关于我 -->
         <section class="cell cell-about reveal" id="about">
           <article class="card about">
-            <div>
-              <p class="eyebrow">关于我</p>
-              <p class="about__sign">— 徐不慌</p>
-            </div>
-            <div class="about__body">
-              <p>白天我在外企金融公司写代码，晚上指挥 21 个 AI 员工，每周上线一个出海站。</p>
-              <p>
-                2023 年我裸辞 all in 过一次，以为“准备好了才能开始”，结果现金流一断，决策全变形，狼狈回了职场。那跤让我对“先保现金流、再用下班时间建资产”有了生理级的敬畏。所以我现在的路径是：在职不离职，把模糊的想法拆成能自动运转的产线，让 AI 员工在下班时间替我干活。别人攒钱，我建系统。
-              </p>
-              <p>不敢辞职的打工人，也能有一份资产型事业——我就是第一个实验品。</p>
+            <p class="eyebrow">关于我</p>
+            <div class="about__inner">
+              <div class="about__side">
+                <div class="about__avatar">
+                  <img
+                    src="./avatar.jpg"
+                    alt="徐不慌的头像"
+                    width="160"
+                    height="184"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </div>
+                <p class="about__sign">— 徐不慌</p>
+              </div>
+              <div class="about__body">
+                <p>白天我在外企金融公司写代码，晚上指挥 21 个 AI 员工，每周上线一个出海站。</p>
+                <p>
+                  2023 年我裸辞 all in 过一次，以为“准备好了才能开始”，结果现金流一断，决策全变形，狼狈回了职场。那跤让我对“先保现金流、再用下班时间建资产”有了生理级的敬畏。所以我现在的路径是：在职不离职，把模糊的想法拆成能自动运转的产线，让 AI 员工在下班时间替我干活。别人攒钱，我建系统。
+                </p>
+                <p>不敢辞职的打工人，也能有一份资产型事业——我就是第一个实验品。</p>
+              </div>
             </div>
           </article>
         </section>
@@ -239,7 +271,7 @@
             <div class="chips">
               <span class="chip">出海独立开发者</span>
               <span class="chip">AI Agent 工程</span>
-              <span class="chip">在职创业实证者</span>
+              <span class="chip">在职创业 · 下班后创业实证者</span>
               <span class="chip">出海选词判断（GEO）</span>
               <span class="chip">系统化拆解</span>
             </div>
@@ -296,7 +328,7 @@
             </div>
             <div class="contact__qr">
               <img
-                src="images/wechat-qr.jpg"
+                src="./wechat-qr.jpg"
                 alt="徐不慌的微信二维码，扫码添加好友"
                 width="220"
                 height="275"
@@ -315,6 +347,6 @@
 
     <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-    <script src="scripts/main.js"></script>
+    <script src="./script.js"></script>
   </body>
 </html>
