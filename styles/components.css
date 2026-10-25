@@ -699,10 +699,9 @@
   margin-top: var(--sp-2);
 }
 
-/* 标签卡与问答卡同高，把标签压到底部，避免中间空一大块 */
-.cell-tags .chips {
-  margin-top: auto;
-  padding-top: var(--sp-3);
+/* 标签卡与问答卡同高，标签按自然顺序紧随标题 */
+.cell-tags .card {
+  justify-content: flex-start;
 }
 
 .chip {
